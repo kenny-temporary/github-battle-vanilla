@@ -134,6 +134,7 @@ function Popular() {
       presit.initialPage,
       presit.RepositoriesUpdateStatus.Init
     );
+    setCurrentPage(presit.initialPage);
   }, [checkedLanguage]);
 
   return (
@@ -143,23 +144,27 @@ function Popular() {
         onUpdate={setCheckedLanguage}
         checked={checkedLanguage}
       />
-
-      {error?.errorMessage?.message && (
+      {error?.errorMessage?.message ? (
         <div className="d-flex align-items-center flex-column">
           <h4>Some mistakes have occurred.</h4>
           <span>{error?.errorMessage?.message}</span>
-          <span> <a href={error?.errorMessage?.documentation_url}>Click here to view the document</a></span>
+          <span>
+            {" "}
+            <a href={error?.errorMessage?.documentation_url}>
+              Click here to view the document
+            </a>
+          </span>
         </div>
+      ) : (
+        <antd.Spin spinning={loading}>
+          <PopularList
+            repositoties={repositoties}
+            checked={checkedLanguage}
+            onNextUpdate={handleNextUpdate}
+            canLoadMore={canLoadMore}
+          />
+        </antd.Spin>
       )}
-
-      <antd.Spin spinning={loading}>
-        <PopularList
-          repositoties={repositoties}
-          checked={checkedLanguage}
-          onNextUpdate={handleNextUpdate}
-          canLoadMore={canLoadMore}
-        />
-      </antd.Spin>
     </div>
   );
 }
