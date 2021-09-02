@@ -7,6 +7,7 @@ function PopularLanguages({ languages, onUpdate, checked }) {
       {languages?.map((language) => {
         return (
           <li
+            className="px-4 py-2 languageItem"
             key={language}
             onClick={() => onUpdate && onUpdate(language)}
             style={{ color: checked === language ? "red" : "green" }}
@@ -22,7 +23,7 @@ function PopularLanguages({ languages, onUpdate, checked }) {
 function PopularList({ repositoties, onNextUpdate, checked, canLoadMore }) {
   return (
     <div style={{ color: "green" }}>
-      <div className="row">
+      <div className="row justify-content-around">
         {repositoties?.map((repositoty, key) => (
           <Card key={repositoty?.id} data={repositoty} index={key + 1} />
         ))}
@@ -38,9 +39,11 @@ function PopularList({ repositoties, onNextUpdate, checked, canLoadMore }) {
 
 function Card({ data, index }) {
   return (
-    <div className="col col-3" style={{ border: "1px solid red" }}>
-      <h2>#{index}</h2>
-      <div>图片占位区域</div>
+    <div className="col col-3 py-4 px-5" style={{ border: "1px solid red" }}>
+      <h2 className="text-center">#{index}</h2>
+      <div className="aspectRatioImageContainer">
+        <img src={data?.owner?.avatar_url} className="avatar w-70" alt="card-item" />
+      </div>
       <div>
         <a href={data?.html_url}>{data?.name}</a>
       </div>
@@ -66,8 +69,11 @@ function Popular() {
   const [checkedLanguage, setCheckedLanguage] = React.useState(
     presit.initialLanguages[0]
   );
+  const [loading, setLoading] = React.useState(false);
 
   const setRepositotiesAsync = (currentLanguage, page, type) => {
+    setLoading(true);
+
     queryRepositoty({ language: currentLanguage, page }).then(
       (repositoties) => {
         setCanLoadMore(!repositoties.data?.incomplete_results);
@@ -80,7 +86,9 @@ function Popular() {
           return results;
         });
       }
-    );
+    ).finally(() => {
+      setLoading(false)
+    });
   };
 
   const handleNextUpdate = (language) => {
@@ -108,12 +116,14 @@ function Popular() {
         onUpdate={setCheckedLanguage}
         checked={checkedLanguage}
       />
-      <PopularList
-        repositoties={repositoties}
-        checked={checkedLanguage}
-        onNextUpdate={handleNextUpdate}
-        canLoadMore={canLoadMore}
-      />
+      <antd.Spin spinning={loading}>
+        <PopularList
+          repositoties={repositoties}
+          checked={checkedLanguage}
+          onNextUpdate={handleNextUpdate}
+          canLoadMore={canLoadMore}
+        />
+      </antd.Spin>
     </div>
   );
 }
