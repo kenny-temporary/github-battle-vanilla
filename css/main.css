@@ -1,13 +1,58 @@
 .languageItem {
-    cursor: pointer;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
 }
 
 .aspectRatioImageContainer {
-    aspect-ratio: 3/4;
+  aspect-ratio: 3/4;
+  margin: 0 auto;
 }
 
-.aspectRatioImageContainer > img { 
-    height: 100%;
-    width: 100%;
-    object-fit: contain;
+.aspectRatioImageContainer > img {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+
+.repositotyItemCard {
+  width: 24.3%;
+  margin-bottom: 1.5%;
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.repositotyName {
+  height: 3rem;
+  /* line-height: 3rem; */
+  font-size: 1.35rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.repositotyName > a {
+  color: rgb(187, 46, 31);
+}
+
+.repositotyDescription {
+  font-size: 1.2rem;
+}
+
+.repositotyDescription > li:first-child > a {
+  font-weight: bold;
+  color: black;
+}
+
+.orange-icon {
+  color: rgb(255, 191, 116);
+}
+.yellow-icon {
+  color: rgb(255, 215, 0);
+}
+
+.blue-icon {
+  color: rgb(129, 195, 245);
+}
+
+.orangered-icon {
+  color: rgb(241, 138, 147);
 }

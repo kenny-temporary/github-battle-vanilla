@@ -10,7 +10,9 @@ function PopularLanguages({ languages, onUpdate, checked }) {
             className="px-4 py-2 languageItem"
             key={language}
             onClick={() => onUpdate && onUpdate(language)}
-            style={{ color: checked === language ? "red" : "green" }}
+            style={{
+              color: checked === language ? "rgb(187, 46, 31)" : "black",
+            }}
           >
             {language}
           </li>
@@ -22,16 +24,22 @@ function PopularLanguages({ languages, onUpdate, checked }) {
 
 function PopularList({ repositoties, onNextUpdate, checked, canLoadMore }) {
   return (
-    <div style={{ color: "green" }}>
-      <div className="row justify-content-around">
+    <div>
+      <div className="row justify-content-around flex-warp">
         {repositoties?.map((repositoty, key) => (
           <Card key={repositoty?.id} data={repositoty} index={key + 1} />
         ))}
       </div>
+
       {canLoadMore && (
-        <button onClick={() => onNextUpdate && onNextUpdate(checked)}>
-          下一页数据
-        </button>
+        <div className="text-center">
+          <button
+            className="btn btn-dark my-4"
+            onClick={() => onNextUpdate && onNextUpdate(checked)}
+          >
+            下一页数据
+          </button>
+        </div>
       )}
     </div>
   );
@@ -39,23 +47,35 @@ function PopularList({ repositoties, onNextUpdate, checked, canLoadMore }) {
 
 function Card({ data, index }) {
   return (
-    <div className="col col-3 py-4 px-5" style={{ border: "1px solid red" }}>
-      <h2 className="text-center">#{index}</h2>
-      <div className="aspectRatioImageContainer">
-        <img src={data?.owner?.avatar_url} className="avatar w-70" alt="card-item" />
+    <div className="col col-lg-3 repositotyItemCard">
+      <h3 className="text-center mt-5">#{index}</h3>
+      <div className="aspectRatioImageContainer w-50">
+        <img src={data?.owner?.avatar_url} className="avatar" alt="card-item" />
       </div>
-      <div>
+
+      <div className="repositotyName text-center">
         <a href={data?.html_url}>{data?.name}</a>
       </div>
-      <ul>
+
+      <ul className="repositotyDescription mb-4 fa-ul">
         <li>
+          <i className="fa-li fa fa-user orange-icon"></i>
           <a href={data?.owner?.html_url} target="_blank">
             {data?.owner?.login}
           </a>
         </li>
-        <li>{data?.stargazers_count} stars</li>
-        <li>{data?.forks_count} forks</li>
-        <li>{data?.open_issues_count} open issues</li>
+        <li>
+          <i className="fa-li fa fa-star yellow-icon"></i>
+          {data?.stargazers_count} stars
+        </li>
+        <li>
+          <i className="fa-li fa fa-download blue-icon"></i>
+          {data?.forks_count} forks
+        </li>
+        <li>
+          <i className="fa-li fa fa-exclamation-triangle orangered-icon"></i>
+          {data?.open_issues_count} open issues
+        </li>
       </ul>
     </div>
   );
@@ -70,12 +90,14 @@ function Popular() {
     presit.initialLanguages[0]
   );
   const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState({});
 
   const setRepositotiesAsync = (currentLanguage, page, type) => {
     setLoading(true);
 
-    queryRepositoty({ language: currentLanguage, page }).then(
-      (repositoties) => {
+    queryRepositoty({ language: currentLanguage, page })
+      .then((repositoties) => {
+        setError({});
         setCanLoadMore(!repositoties.data?.incomplete_results);
 
         setRepositoties((previous) => {
@@ -85,10 +107,15 @@ function Popular() {
               : [...previous, ...repositoties?.data?.items];
           return results;
         });
-      }
-    ).finally(() => {
-      setLoading(false)
-    });
+      })
+      .catch((error) => {
+        setRepositoties([]);
+        setError(error);
+        setCanLoadMore(false);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   const handleNextUpdate = (language) => {
@@ -116,6 +143,15 @@ function Popular() {
         onUpdate={setCheckedLanguage}
         checked={checkedLanguage}
       />
+
+      {error?.errorMessage?.message && (
+        <div className="d-flex align-items-center flex-column">
+          <h4>Some mistakes have occurred.</h4>
+          <span>{error?.errorMessage?.message}</span>
+          <span> <a href={error?.errorMessage?.documentation_url}>Click here to view the document</a></span>
+        </div>
+      )}
+
       <antd.Spin spinning={loading}>
         <PopularList
           repositoties={repositoties}
